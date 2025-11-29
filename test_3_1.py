@@ -11,7 +11,7 @@ inputs = torch.tensor(
 query = inputs[1]
 attn_scores_2 = torch.empty(inputs.shape[0])
 for i, x_i in enumerate(inputs):
-    attn_scores_2[2] = torch.dot(x_i, query)
+    attn_scores_2[i] = torch.dot(x_i, query)
 
 print(attn_scores_2)
 
@@ -22,3 +22,31 @@ print(attn_scores_2)
 attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
 print("Attention weights:", attn_weights_2)
 print("Sum:", attn_weights_2.sum())
+
+query = inputs[1]
+context_vec_2 = torch.zeros(inputs.shape)
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i
+
+print(context_vec_2)
+
+attn_scores = torch.empty(6, 6)
+for i, x_i in enumerate(inputs):
+    for j, x_j in enumerate(inputs):
+        attn_scores[i, j] = torch.dot(x_i, x_j)
+print(attn_scores)
+
+attn_scores = inputs @ inputs.T
+print(attn_scores)
+
+attn_weights = torch.softmax(attn_scores, dim=-1)
+print(attn_weights)
+
+row_2_sum = sum([0.1385, 0.2379, 0.2333, 0.1240, 0.1082, 0.1581])
+print("Row 2 sum:", row_2_sum)
+print("All row sums:", attn_weights.sum(dim=-1))
+
+all_context_vecs = attn_weights @ inputs
+print(all_context_vecs)
+
+print("Previous 2nd context vector:", context_vec_2)
